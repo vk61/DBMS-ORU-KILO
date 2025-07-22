@@ -261,7 +261,22 @@ Avoiding <b>redundancy</b>  and <b>incompleteness</b> helps in the design proces
 
     2. If a given relation schema is not in “good form,” then we decompose it into a number of smaller relation schemas, each of which is in an appropriate normal form. The <b>decomposition</b> must be a <b>lossless decomposition</b>.
     
-    
+  ### First Normal Form (1NF) Rules
+
+  To ensure that a database table is in **First Normal Form (1NF)**, it must follow these rules:
+  
+  1. **Using row order to convey information is not permitted**  
+     Rows in a table should be treated as unordered. Any meaning should be derived from data, not position.
+  
+  2. **Mixing data types within the same column is not permitted**  
+     Every column must hold values of a single data type to maintain consistency and enable reliable queries.
+  
+  3. **Having a table without a primary key is not permitted**  
+     Every table must have a **primary key** to uniquely identify each record (row).
+  
+  4. **Repeating groups are not permitted**  
+     Columns should not contain multiple values or arrays; each field should contain only atomic (indivisible) values.
+
 
 
 
