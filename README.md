@@ -251,7 +251,8 @@ Avoiding <b>redundancy</b>  and <b>incompleteness</b> helps in the design proces
 
    *  A good entity-relationship design does not contain redundant attributes. 
 
-  # Database Normalization
+
+
 
 ---
 
@@ -290,8 +291,6 @@ To ensure that a database table is in **First Normal Form (1NF)**, it must satis
 4. **No repeating groups**  
    Each field must contain atomic (indivisible) values — no arrays or multi-valued columns.
 
----
-
 ### 📊 Example Table: `Student_Contact` (Before 1NF)
 
 | Student_ID | Name      | Contact_Numbers       |
@@ -303,8 +302,6 @@ To ensure that a database table is in **First Normal Form (1NF)**, it must satis
 - **Violations**:
   - The `Contact_Numbers` field contains **multiple values** (non-atomic).
   - This table is **not in 1NF**.
-
----
 
 ### ✅ Converted Table: `Student_Contact` (In 1NF)
 
@@ -332,7 +329,6 @@ To achieve **Second Normal Form (2NF)**, a table must:
 ### ✅ Rule:
 Each non-key attribute must depend on the **entire composite primary key**, not just a part of it.
 
----
 
 ### 📊 Example Table: `Player_Inventory` (Before 2NF)
 
@@ -349,8 +345,6 @@ Each non-key attribute must depend on the **entire composite primary key**, not 
 | trev73    | copper coins | 30            | Advanced       |
 | trev73    | rings        | 7             | Advanced       |
 
----
-
 ### 🔍 Functional Dependencies
 
 - `{ Player_ID, Item_Type } → Item_Quantity` ✅  
@@ -359,13 +353,13 @@ Each non-key attribute must depend on the **entire composite primary key**, not 
 - `{ Player_ID } → Player_Rating` ❌  
   (Depends on part of the key — violates 2NF)
 
----
 
 ### ❗ Issue
 
 `Player_Rating` depends only on `Player_ID`, not on the full composite key `{ Player_ID, Item_Type }`.  
 This violates 2NF and requires decomposition for proper normalization.
 
+---
 
 ### Database Engine
 The functional components of the database can be broadly divided into 
