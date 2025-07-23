@@ -277,6 +277,45 @@ Avoiding <b>redundancy</b>  and <b>incompleteness</b> helps in the design proces
   4. **Repeating groups are not permitted**  
      Columns should not contain multiple values or arrays; each field should contain only atomic (indivisible) values.
 
+    ### Second Normal Form (2NF) Rules
+
+    To achieve **Second Normal Form (2NF)**, a table must first satisfy all the rules of **First Normal Form (1NF)**, and then:
+
+    ### ✅ Rule:
+    Each non-key attribute must depend on the **entire** primary key (not just part of it).
+
+    ---
+
+    ### 📊 Example Table: `Player_Inventory`
+
+    **Primary Key**: { Player_ID, Item_Type }  
+    **Non-key Attributes**: Item_Quantity, Player_Rating
+
+    | Player_ID | Item_Type    | Item_Quantity | Player_Rating |
+    |-----------|--------------|---------------|----------------|
+    | jdog21    | amulets      | 2             | Intermediate   |
+    | jdog21    | rings        | 4             | Intermediate   |
+    | gila19    | copper coins | 18            | Beginner       |
+    | trev73    | shields      | 3             | Advanced       |
+    | trev73    | arrows       | 5             | Advanced       |
+    | trev73    | copper coins | 30            | Advanced       |
+    | trev73    | rings        | 7             | Advanced       |
+
+    ---
+
+    ### 🔍 Functional Dependencies:
+
+    - { Player_ID, Item_Type } → Item_Quantity ✅  
+    (Depends on entire primary key — satisfies 2NF)
+
+    - { Player_ID } → Player_Rating ❌  
+    (Partial dependency — violates 2NF)
+
+    ---
+
+    ### ❗ Issue:
+    `Player_Rating` depends only on `Player_ID` (part of the primary key), not the whole composite key → This violates 2NF and requires normalization.
+
 
 
 
