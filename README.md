@@ -361,6 +361,88 @@ This violates 2NF and requires decomposition for proper normalization.
 
 ---
 
+## 🧮 Third Normal Form (3NF) Rules
+
+**Definition**:  
+A relation is in **Third Normal Form (3NF)** if:
+
+> Every non-key attribute depends on the key, the **whole** key, and **nothing but** the key.
+
+This means it should:
+1. Be in **Second Normal Form (2NF)**.
+2. Have **no transitive dependencies**—non-key attributes must not depend on other non-key attributes.
+
+
+#### ❌ Problem Example (Transitive Dependency)
+
+**Table: `Player`**
+
+| Player_ID | Player_Rating | Player_Skill_Level |
+|-----------|----------------|---------------------|
+| jdog21    | Intermediate   | 4                   |
+| gila19    | Beginner       | 4                   |
+| trev73    | Advanced       | 8                   |
+| tina42    | Beginner       | 1                   |
+
+- Functional Dependencies:
+  - `Player_ID → Player_Skill_Level`
+  - `Player_Skill_Level → Player_Rating`  
+    (Transitive dependency: `Player_ID → Player_Rating` via `Player_Skill_Level`)
+
+- ❗ **Issue**: `Player_Rating` is transitively dependent on the primary key `Player_ID`.
+
+---
+
+### ✅ 3NF Decomposition
+
+To fix this, we separate the transitive dependency into a new table.
+
+**Table 1: `Player`**
+
+| Player_ID | Player_Skill_Level |
+|-----------|---------------------|
+| jdog21    | 4                   |
+| gila19    | 4                   |
+| trev73    | 8                   |
+| tina42    | 1                   |
+
+**Table 2: `Player_Skill_Levels`**
+
+| Player_Skill_Level | Player_Rating |
+|--------------------|----------------|
+| 1                  | Beginner       |
+| 2                  | Beginner       |
+| 3                  | Beginner       |
+| 4                  | Intermediate   |
+| 5                  | Intermediate   |
+| 6                  | Intermediate   |
+| 7                  | Advanced       |
+| 8                  | Advanced       |
+| 9                  | Advanced       |
+
+- Now all non-key attributes directly depend on the key only.
+- This satisfies **3NF**.
+
+
+### Boyce-Codd Normal Form (BCNF)
+
+**Definition**:  
+A relation is in **BCNF** if:
+
+> For every non-trivial functional dependency X → Y, X is a **superkey**.
+
+- It is a stricter version of 3NF.
+- All BCNF relations are in 3NF, but not all 3NF relations are in BCNF.
+
+
+🧠 **Key Difference**:
+- 3NF allows non-superkey determinants if the dependent attribute is a **prime attribute** (part of some candidate key).
+- BCNF requires **all** determinants to be superkeys—**no exceptions**.
+
+---
+
+
+
 ### Database Engine
 The functional components of the database can be broadly divided into 
 storage manager, query processror and transation manager.
