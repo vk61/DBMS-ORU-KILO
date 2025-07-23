@@ -429,7 +429,7 @@ To fix this, we separate the transitive dependency into a new table.
 **Definition**:  
 A relation is in **BCNF** if:
 
-> For every non-trivial functional dependency X → Y, X is a **superkey**.
+> Each attribute in the table must depend on the key, the **whole** key, and **nothing but** the key.
 
 - It is a stricter version of 3NF.
 - All BCNF relations are in 3NF, but not all 3NF relations are in BCNF.
@@ -439,9 +439,231 @@ A relation is in **BCNF** if:
 - 3NF allows non-superkey determinants if the dependent attribute is a **prime attribute** (part of some candidate key).
 - BCNF requires **all** determinants to be superkeys—**no exceptions**.
 
+## 🧮 Fourth Normal Form (4NF)
+
+### 🔄 What is 4NF?
+
+> A relation is in **Fourth Normal Form (4NF)** if it is in **Boyce-Codd Normal Form (BCNF)** and **has no multivalued dependencies (MVDs)**, except those where the **left side is a candidate key**.
+
+
+### 💡 Understanding Multivalued Dependencies (MVDs)
+
+A **Multivalued Dependency** means that:
+- One attribute determines a **set of values** for another attribute
+- That dependency is **independent** of other attributes in the table
+
+**Notation:**  
+- `{ A } →→ { B }` means: for each value of A, there are multiple independent values of B.
+
+
+### 🎯 Problem Example: MVD in One Table
+
+**Multivalued Dependencies Present:**
+- `{ Model } →→ { Color }`
+- `{ Model } →→ { Style }`
+
+> This means each **Model** can have multiple **Colors** and multiple **Styles**, but **Colors and Styles are not related to each other**.
+
+
+### 📦 Original Table: `Model_Colours_And_Styles_Available`
+
+| Model   | Color  | Style       |
+|---------|--------|-------------|
+| Tweety  | Yellow | Bungalow    |
+| Tweety  | Yellow | Duplex      |
+| Tweety  | Blue   | Bungalow    |
+| Tweety  | Blue   | Duplex      |
+| Metro   | Brown  | High-Rise   |
+| Metro   | Brown  | Modular     |
+| Metro   | Grey   | High-Rise   |
+| Metro   | Grey   | Modular     |
+| Prairie | Brown  | Bungalow    |
+| Prairie | Brown  | Schoolhouse |
+| Prairie | Beige  | Bungalow    |
+| Prairie | Beige  | Schoolhouse |
+| Prairie | Green  | Bungalow    |
+
+🧨 This design **repeats data unnecessarily**, leading to:
+- **Redundancy**
+- **Update anomalies**
+
+
+## ✅ 4NF Solution: Decompose the Table
+
+> We separate the **independent multivalued dependencies** into their own tables.
+
+### 📗 Table 1: `Model_Colors_Available`
+
+| Model   | Color  |
+|---------|--------|
+| Tweety  | Yellow |
+| Tweety  | Blue   |
+| Metro   | Brown  |
+| Metro   | Grey   |
+| Prairie | Brown  |
+| Prairie | Beige  |
+| Prairie | Green  |
+
+
+### 📘 Table 2: `Model_Styles_Available`
+
+| Model   | Style       |
+|---------|-------------|
+| Tweety  | Bungalow    |
+| Tweety  | Duplex      |
+| Metro   | High-Rise   |
+| Metro   | Modular     |
+| Prairie | Bungalow    |
+| Prairie | Schoolhouse |
+
+
+### ✅ Result: Tables Are Now in 4NF
+
+- Each table contains **only one multivalued dependency**
+- The **redundancy is removed**
+- **No independent attributes are mixed together**
+
 ---
 
+## 🧮 Fifth Normal Form (5NF)
 
+### 🎯 Definition
+
+> A relation is in **Fifth Normal Form (5NF)**, also called **Project-Join Normal Form (PJ/NF)**, **if it cannot be decomposed into any number of smaller tables without loss of data**, i.e., **without introducing spurious tuples** when joined back.
+
+In simpler terms:  
+> If a table can be reconstructed from multiple smaller tables using only **joins**, and there’s **no extra data** introduced in the process, it's in 5NF.
+
+
+
+## 🧊 Scenario: Ice Cream Preferences
+
+### 🧾 Original Table: `Preferred_Ice_Cream_Products_By_Person`
+
+| Person | Brand     | Flavor               |
+|--------|-----------|----------------------|
+| Jason  | Frosty's  | Vanilla              |
+| Jason  | Frosty's  | Chocolate            |
+| Jason  | Alpine    | Vanilla              |
+| Suzy   | Alpine    | Rum Raisin           |
+| Suzy   | Ice Queen | Mint Chocolate Chip  |
+| Suzy   | Ice Queen | Strawberry           |
+| Suzy   | Frosty's  | Strawberry           |
+
+### 🗣 Preferences (Natural Language)
+
+#### Jason:
+- Likes: **Vanilla**, **Chocolate**
+- Brands: **Frosty's**, **Alpine**
+
+#### Suzy:
+- Likes: **Rum Raisin**, **Mint Chocolate Chip**, **Strawberry**
+- Brands: **Alpine**, **Ice Queen**, **Frosty's**
+
+
+
+## 🔀 Decomposed Tables (To Reach 5NF)
+
+### 🟣 `Preferred_Brands_By_Person`
+
+| Person | Brand     |
+|--------|-----------|
+| Jason  | Frosty's  |
+| Jason  | Alpine    |
+| Suzy   | Alpine    |
+| Suzy   | Ice Queen |
+| Suzy   | Frosty's  |
+
+
+### 🔵 `Preferred_Flavors_By_Person`
+
+| Person | Flavor              |
+|--------|---------------------|
+| Jason  | Vanilla             |
+| Jason  | Chocolate           |
+| Suzy   | Rum Raisin          |
+| Suzy   | Mint Chocolate Chip |
+| Suzy   | Strawberry          |
+
+
+### 🟢 `Available_Flavors_By_Brand`
+
+| Brand     | Flavor              |
+|-----------|---------------------|
+| Frosty's  | Vanilla             |
+| Frosty's  | Strawberry          |
+| Frosty's  | Mint Chocolate Chip |
+| Alpine    | Vanilla             |
+| Alpine    | Rum Raisin          |
+| Ice Queen | Vanilla             |
+| Ice Queen | Strawberry          |
+| Ice Queen | Mint Chocolate Chip |
+
+
+## ✅ Reconstruction with Joins
+
+To reconstruct the original `Preferred_Ice_Cream_Products_By_Person`, we do:
+
+```sql
+SELECT
+    pf.Person,
+    pb.Brand,
+    bf.Flavor
+FROM Preferred_Brands_By_Person pb
+JOIN Preferred_Flavors_By_Person pf ON pb.Person = pf.Person
+JOIN Available_Flavors_By_Brand bf ON bf.Brand = pb.Brand AND bf.Flavor = pf.Flavor;
+```
+
+## ❓ Why Fifth Normal Form (5NF) Is Needed
+
+The `Preferred_Ice_Cream_Products_By_Person` table combines **three different relationships**:
+
+1. A person's preferred **brands**
+2. A person's preferred **flavors**
+3. The **flavors available** from each brand
+
+These are **independent preferences**, but in the combined table, they appear as if they're directly related. This can lead to:
+
+### ⚠️ Redundancy
+
+If Jason likes "Vanilla" and "Chocolate", and he likes both "Frosty's" and "Alpine", and if both brands sell both flavors, we need **4 rows** to show all combinations.
+
+Now imagine hundreds of people, brands, and flavors — the table grows **exponentially**.
+
+---
+
+### ⚠️ Update Anomalies
+
+If a brand **stops offering** a flavor, you’d need to **manually remove every row** involving that flavor-brand combo — tedious and error-prone.
+
+---
+
+### ⚠️ Insertion Anomalies
+
+You **can’t add** that someone likes "Mint Chocolate Chip" unless you know **which brand** offers it — even if that person hasn’t chosen a brand yet.
+
+---
+
+### ⚠️ Deletion Anomalies
+
+If Suzy only likes "Strawberry" from "Frosty's" and we remove that row, we might lose the fact that she:
+- Likes **Frosty's**
+- Likes **Strawberry**
+
+---
+
+### ✅ Solution: Decompose into Independent Relations
+
+By breaking it down into:
+- `Preferred_Brands_By_Person`
+- `Preferred_Flavors_By_Person`
+- `Available_Flavors_By_Brand`
+
+We isolate the **independent facts**, store them only once, and recombine them **losslessly** when needed using joins.
+
+That’s the power of **5NF**: it ensures **no spurious data**, **minimal redundancy**, and **maximum integrity**.
+
+---
 
 ### Database Engine
 The functional components of the database can be broadly divided into 
