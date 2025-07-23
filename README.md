@@ -251,74 +251,120 @@ Avoiding <b>redundancy</b>  and <b>incompleteness</b> helps in the design proces
 
    *  A good entity-relationship design does not contain redundant attributes. 
 
-   ### Reduction to relation schema
-   # TODO
+  # Database Normalization
 
-   ### Normalization Theory
-    The method for designing a relational database is to use a process commonly known as normalization.
+---
 
-    1.  Decide if a given relation schema is in “goodform.” There are a number of different forms (called normal forms).To determine whether a relation schema is in one of the desirable normal forms, we need additional information about the real-world enterprise that we are modeling with the database. The most common approach is to use <b>functional dependencies</b>
+## 📉 Reduction to Relation Schema
 
-    2. If a given relation schema is not in “good form,” then we decompose it into a number of smaller relation schemas, each of which is in an appropriate normal form. The <b>decomposition</b> must be a <b>lossless decomposition</b>.
-    
-  ### First Normal Form (1NF) Rules
+**TODO:** Content to be added.
 
-  To ensure that a database table is in **First Normal Form (1NF)**, it must follow these rules:
-  
-  1. **Using row order to convey information is not permitted**  
-     Rows in a table should be treated as unordered. Any meaning should be derived from data, not position.
-  
-  2. **Mixing data types within the same column is not permitted**  
-     Every column must hold values of a single data type to maintain consistency and enable reliable queries.
-  
-  3. **Having a table without a primary key is not permitted**  
-     Every table must have a **primary key** to uniquely identify each record (row).
-  
-  4. **Repeating groups are not permitted**  
-     Columns should not contain multiple values or arrays; each field should contain only atomic (indivisible) values.
+---
 
-    ### Second Normal Form (2NF) Rules
+## 📘 Normalization Theory
 
-    To achieve **Second Normal Form (2NF)**, a table must first satisfy all the rules of **First Normal Form (1NF)**, and then:
+The method for designing a relational database is to use a process commonly known as **normalization**.
 
-    ### ✅ Rule:
-    Each non-key attribute must depend on the **entire** primary key (not just part of it).
+1. **Determine if a relation schema is in "good form":**  
+   There are several types of normal forms. To assess whether a relation schema is in a desirable form, we require extra information about the real-world system being modeled. The most common tool used is **functional dependencies**.
 
-    ---
+2. **Decompose if not in good form:**  
+   If a relation schema is not in good form, it should be **decomposed** into multiple smaller schemas. Each of these should satisfy a suitable normal form.  
+   > ⚠️ The decomposition must be **lossless**, meaning no information is lost in the process.
 
-    ### 📊 Example Table: `Player_Inventory`
+---
 
-    **Primary Key**: { Player_ID, Item_Type }  
-    **Non-key Attributes**: Item_Quantity, Player_Rating
+## 🧮 First Normal Form (1NF) Rules
 
-    | Player_ID | Item_Type    | Item_Quantity | Player_Rating |
-    |-----------|--------------|---------------|----------------|
-    | jdog21    | amulets      | 2             | Intermediate   |
-    | jdog21    | rings        | 4             | Intermediate   |
-    | gila19    | copper coins | 18            | Beginner       |
-    | trev73    | shields      | 3             | Advanced       |
-    | trev73    | arrows       | 5             | Advanced       |
-    | trev73    | copper coins | 30            | Advanced       |
-    | trev73    | rings        | 7             | Advanced       |
+To ensure that a database table is in **First Normal Form (1NF)**, it must satisfy the following conditions:
 
-    ---
+1. **Row order must not convey information**  
+   Rows are inherently unordered. Their position should not imply any meaning.
 
-    ### 🔍 Functional Dependencies:
+2. **No mixing of data types within a column**  
+   Each column should hold values of a single consistent data type.
 
-    - { Player_ID, Item_Type } → Item_Quantity ✅  
-    (Depends on entire primary key — satisfies 2NF)
+3. **Primary key is mandatory**  
+   Every table must have a **primary key** to uniquely identify each row.
 
-    - { Player_ID } → Player_Rating ❌  
-    (Partial dependency — violates 2NF)
+4. **No repeating groups**  
+   Each field must contain atomic (indivisible) values — no arrays or multi-valued columns.
 
-    ---
+---
 
-    ### ❗ Issue:
-    `Player_Rating` depends only on `Player_ID` (part of the primary key), not the whole composite key → This violates 2NF and requires normalization.
+### 📊 Example Table: `Student_Contact` (Before 1NF)
 
+| Student_ID | Name      | Contact_Numbers       |
+|------------|-----------|------------------------|
+| S001       | Alice     | 12345, 67890           |
+| S002       | Bob       | 11223                  |
+| S003       | Charlie   | 33445, 55667, 77889    |
 
+- **Violations**:
+  - The `Contact_Numbers` field contains **multiple values** (non-atomic).
+  - This table is **not in 1NF**.
 
+---
 
+### ✅ Converted Table: `Student_Contact` (In 1NF)
+
+| Student_ID | Name    | Contact_Number |
+|------------|---------|----------------|
+| S001       | Alice   | 12345          |
+| S001       | Alice   | 67890          |
+| S002       | Bob     | 11223          |
+| S003       | Charlie | 33445          |
+| S003       | Charlie | 55667          |
+| S003       | Charlie | 77889          |
+
+- Now, each field contains only **atomic values**.
+- The table satisfies **First Normal Form (1NF)**.
+
+---
+
+## 🧮 Second Normal Form (2NF) Rules
+
+To achieve **Second Normal Form (2NF)**, a table must:
+
+- First, be in **First Normal Form (1NF)** ✅
+- Then, ensure that every non-key attribute is **fully functionally dependent on the entire primary key**.
+
+### ✅ Rule:
+Each non-key attribute must depend on the **entire composite primary key**, not just a part of it.
+
+---
+
+### 📊 Example Table: `Player_Inventory` (Before 2NF)
+
+**Primary Key**: `{ Player_ID, Item_Type }`  
+**Non-key Attributes**: `Item_Quantity`, `Player_Rating`
+
+| Player_ID | Item_Type    | Item_Quantity | Player_Rating |
+|-----------|--------------|---------------|----------------|
+| jdog21    | amulets      | 2             | Intermediate   |
+| jdog21    | rings        | 4             | Intermediate   |
+| gila19    | copper coins | 18            | Beginner       |
+| trev73    | shields      | 3             | Advanced       |
+| trev73    | arrows       | 5             | Advanced       |
+| trev73    | copper coins | 30            | Advanced       |
+| trev73    | rings        | 7             | Advanced       |
+
+---
+
+### 🔍 Functional Dependencies
+
+- `{ Player_ID, Item_Type } → Item_Quantity` ✅  
+  (Depends on the entire composite key — satisfies 2NF)
+
+- `{ Player_ID } → Player_Rating` ❌  
+  (Depends on part of the key — violates 2NF)
+
+---
+
+### ❗ Issue
+
+`Player_Rating` depends only on `Player_ID`, not on the full composite key `{ Player_ID, Item_Type }`.  
+This violates 2NF and requires decomposition for proper normalization.
 
 
 ### Database Engine
